@@ -1,6 +1,11 @@
 local M = {}
 
+-- list of supported source format by `img2sixel`
+-- https://manpages.ubuntu.com/manpages/xenial/man1/img2sixel.1.html#image%20loaders
+local pattern = { "*.png" }
+
 local group = vim.api.nvim_create_augroup("kjuq_sixelview_group", {})
+
 local offset = 100
 
 local echoraw = function(str)
@@ -32,21 +37,57 @@ local callback = function()
 	local defered_proc = function()
 		local cur_path = vim.fn.expand("%:p")
 		if img_path == cur_path then
-			display_sixel(img_path)
+			vim.defer_fn(function()
+				display_sixel(img_path)
+			end, offset)
 		end
 	end
 
 	vim.defer_fn(defered_proc, offset)
 end
 
-M.setup = function()
+local sixelview_cmd = function()
+	local img_path = vim.fn.expand("%:p")
+
+	-- check if the current buffer's extension is image
+	local curbuf_is_img = false
+	for _, pat in pairs(pattern) do
+		local img_extension = string.sub(img_path, #img_path - (#pat - 2))
+		local pat_extension = string.sub(pat, 2)
+		if img_extension == pat_extension then
+			curbuf_is_img = true
+			break
+		end
+	end
+
+	if not curbuf_is_img then
+		vim.api.nvim_err_writeln("The current buffer is not an image.")
+		return
+	end
+
+	vim.defer_fn(function()
+		display_sixel(img_path)
+	end, offset)
+end
+
+local default_opts = {
+	auto = true,
+}
+
+M.setup = function(opts)
+	opts = vim.tbl_deep_extend("force", default_opts, opts)
+
 	-- TODO: check if the environment is supporting SIXEL
 
-	vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
-		pattern = "*.png",
-		group = group,
-		callback = callback,
-	})
+	if opts.auto then
+		vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
+			pattern = pattern,
+			group = group,
+			callback = callback,
+		})
+	end
+
+	vim.api.nvim_create_user_command("SixelView", sixelview_cmd, {})
 end
 
 return M
