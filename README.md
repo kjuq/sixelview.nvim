@@ -2,6 +2,11 @@
 
 View images within your Neovim via Sixel!
 
+## Disclaimer
+
+This plugin is in experimental state. So sometimes a displayed contents of a buffer breaks.
+When you encounter this issue, type <C-l> to reload a screen.
+
 ## DEMO
 
 ![demo](https://github.com/kjuq/sixelview.nvim/blob/master/img/demo.gif?raw=true)
