@@ -1,7 +1,5 @@
 local M = {}
 
-local offset = 100
-
 local echoraw = function(str)
 	vim.fn.chansend(vim.v.stderr, str)
 end
@@ -25,7 +23,7 @@ local display_sixel = function(img_path)
 	send_sequence(img_path, y, x + 1)
 end
 
-local callback = function()
+local callback = function(delay_ms)
 	local img_path = vim.fn.expand("%:p")
 
 	local defered_proc = function()
@@ -35,10 +33,10 @@ local callback = function()
 		end
 	end
 
-	vim.defer_fn(defered_proc, offset)
+	vim.defer_fn(defered_proc, delay_ms)
 end
 
-local sixelview_cmd = function(pattern)
+local sixelview_cmd = function(pattern, delay_ms)
 	local img_path = vim.fn.expand("%:p")
 
 	-- check if the current buffer's extension is image
@@ -59,7 +57,7 @@ local sixelview_cmd = function(pattern)
 
 	vim.defer_fn(function()
 		display_sixel(img_path)
-	end, offset)
+	end, delay_ms)
 end
 
 local default_opts = {
@@ -102,7 +100,11 @@ local default_opts = {
 		"*.pbm",
 		"*.pnm",
 	},
+	-- whether showing an image automatically when an image buffer is opened
 	auto = true,
+	-- time of delay before showing image
+	-- try setting this duration longer if you have a trouble showing image
+	delay_ms = 100,
 }
 
 M.setup = function(opts)
@@ -114,12 +116,14 @@ M.setup = function(opts)
 		vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 			pattern = opts.pattern,
 			group = vim.api.nvim_create_augroup("sixelview_kjuq", {}),
-			callback = callback,
+			callback = function()
+				callback(opts.delay_ms)
+			end,
 		})
 	end
 
 	vim.api.nvim_create_user_command("SixelView", function()
-		sixelview_cmd(opts.pattern)
+		sixelview_cmd(opts.pattern, opts.delay_ms)
 	end, {})
 end
 
