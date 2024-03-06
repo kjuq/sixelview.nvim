@@ -1,7 +1,7 @@
 local M = {}
 
+local group = vim.api.nvim_create_augroup("kjuq_sixelview_group", {})
 local offset = 100
-local group = vim.api.nvim_create_augroup("kjuq_img_viewer_user_group", {})
 
 local echoraw = function(str)
 	vim.fn.chansend(vim.v.stderr, str)
@@ -33,17 +33,26 @@ M.setup = function()
 		callback = function()
 			local img_path = vim.fn.expand("%:p")
 
-			local timer = vim.uv.new_timer()
-			if timer == nil then
-				return
+			local utime_bak = vim.o.updatetime
+			vim.opt.updatetime = 100
+			local restore_utime = function()
+				vim.opt.updatetime = utime_bak
 			end
 
-			local defered_proc = function()
-				timer:stop()
-				display_sixel(img_path)
-			end
+			vim.api.nvim_create_autocmd({ "CursorHold" }, {
+				group = group,
+				callback = function()
+					local cur_path = vim.fn.expand("%:p")
+					if img_path == cur_path then
+						display_sixel(img_path)
+					end
+					restore_utime()
+				end,
+				once = true,
+			})
 
-			timer:start(offset, 0, vim.schedule_wrap(defered_proc))
+			local timeout = utime_bak + 1000
+			vim.defer_fn(restore_utime, timeout)
 		end,
 	})
 end
