@@ -1,9 +1,5 @@
 local M = {}
 
--- list of supported source format by `img2sixel`
--- https://manpages.ubuntu.com/manpages/xenial/man1/img2sixel.1.html#image%20loaders
-local pattern = { "*.png" }
-
 local group = vim.api.nvim_create_augroup("kjuq_sixelview_group", {})
 
 local offset = 100
@@ -46,7 +42,7 @@ local callback = function()
 	vim.defer_fn(defered_proc, offset)
 end
 
-local sixelview_cmd = function()
+local sixelview_cmd = function(pattern)
 	local img_path = vim.fn.expand("%:p")
 
 	-- check if the current buffer's extension is image
@@ -71,6 +67,45 @@ local sixelview_cmd = function()
 end
 
 local default_opts = {
+	-- list of supported source format by `img2sixel`
+	-- https://manpages.ubuntu.com/manpages/xenial/man1/img2sixel.1.html#image%20loaders
+	pattern = {
+		-- JPEG
+		"*.jpeg",
+		"*.jpg",
+		"*.jpe",
+		"*.jfif",
+		"*.jfi",
+		"*.jif",
+
+		-- PNG
+		"*.png",
+
+		-- TGA
+		"*.tga",
+		"*.icb",
+		"*.vda",
+		"*.vst",
+
+		-- BMP
+		"*.bmp",
+		"*.dib",
+
+		-- PSD
+		"*.psd",
+
+		-- GIF
+		"*.gif",
+
+		-- PIC
+		"*.pic",
+
+		-- PNM
+		"*.ppm",
+		"*.pgm",
+		"*.pbm",
+		"*.pnm",
+	},
 	auto = true,
 }
 
@@ -81,13 +116,15 @@ M.setup = function(opts)
 
 	if opts.auto then
 		vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
-			pattern = pattern,
+			pattern = opts.pattern,
 			group = group,
 			callback = callback,
 		})
 	end
 
-	vim.api.nvim_create_user_command("SixelView", sixelview_cmd, {})
+	vim.api.nvim_create_user_command("SixelView", function()
+		sixelview_cmd(opts.pattern)
+	end, {})
 end
 
 return M
