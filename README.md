@@ -4,7 +4,7 @@ View images within your Neovim via Sixel!
 
 ## Disclaimer
 
-This plugin is in experimental state. So sometimes a displayed contents of a buffer breaks.
+This plugin is in experimental state. So sometimes displayed contents of a buffer break.
 When you encounter this issue, type <C-l> to reload a screen.
 
 ## DEMO
