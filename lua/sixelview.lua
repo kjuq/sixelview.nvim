@@ -1,7 +1,5 @@
 local M = {}
 
-local group = vim.api.nvim_create_augroup("kjuq_sixelview_group", {})
-
 local offset = 100
 
 local echoraw = function(str)
@@ -117,7 +115,7 @@ M.setup = function(opts)
 	if opts.auto then
 		vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 			pattern = opts.pattern,
-			group = group,
+			group = vim.api.nvim_create_augroup("sixelview_kjuq", {}),
 			callback = callback,
 		})
 	end
