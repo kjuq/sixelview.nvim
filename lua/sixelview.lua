@@ -46,8 +46,8 @@ local sixelview_cmd = function(pattern)
 	-- check if the current buffer's extension is image
 	local curbuf_is_img = false
 	for _, pat in pairs(pattern) do
-		local img_extension = string.sub(img_path, #img_path - (#pat - 2))
-		local pat_extension = string.sub(pat, 2)
+		local img_extension = string.lower(string.sub(img_path, #img_path - (#pat - 2)))
+		local pat_extension = string.lower(string.sub(pat, 2))
 		if img_extension == pat_extension then
 			curbuf_is_img = true
 			break
