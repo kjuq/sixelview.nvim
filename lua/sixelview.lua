@@ -31,9 +31,7 @@ local callback = function()
 	local defered_proc = function()
 		local cur_path = vim.fn.expand("%:p")
 		if img_path == cur_path then
-			vim.defer_fn(function()
-				display_sixel(img_path)
-			end, offset)
+			display_sixel(img_path)
 		end
 	end
 
