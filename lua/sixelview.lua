@@ -29,29 +29,19 @@ end
 local callback = function()
 	local img_path = vim.fn.expand("%:p")
 
-	local utime_bak = vim.o.updatetime
-	vim.opt.updatetime = 100
-	local restore_utime = function()
-		vim.opt.updatetime = utime_bak
+	local defered_proc = function()
+		local cur_path = vim.fn.expand("%:p")
+		if img_path == cur_path then
+			display_sixel(img_path)
+		end
 	end
 
-	vim.api.nvim_create_autocmd({ "CursorHold" }, {
-		group = group,
-		callback = function()
-			local cur_path = vim.fn.expand("%:p")
-			if img_path == cur_path then
-				display_sixel(img_path)
-			end
-			restore_utime()
-		end,
-		once = true,
-	})
-
-	local timeout = utime_bak + 1000
-	vim.defer_fn(restore_utime, timeout)
+	vim.defer_fn(defered_proc, offset)
 end
 
 M.setup = function()
+	-- TODO: check if the environment is supporting SIXEL
+
 	vim.api.nvim_create_autocmd({ "BufWinEnter" }, {
 		pattern = "*.png",
 		group = group,
