@@ -11,6 +11,12 @@ When you encounter this issue, type `<C-l>` to reload a screen.
 
 ![demo](https://github.com/kjuq/sixelview.nvim/blob/master/img/demo.gif?raw=true)
 
+## Requirements
+
+- Terminal which supports Sixel (Alacritty, Wezterm, iTerm2, etc)
+- `libsixel`
+	- For MacOS user, `brew install libsixel`
+
 ## Installation
 
 ### Lazy.nvim
