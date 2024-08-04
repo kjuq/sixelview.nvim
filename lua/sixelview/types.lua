@@ -1,0 +1,4 @@
+---@class sixelview.Options
+---@field pattern string[] list of supported source format by `img2sixel`
+---@field auto boolean whether showing an image automatically when an image buffer is opened
+---@field delay_ms number time of delay before showing image
